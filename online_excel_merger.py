@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from io import BytesIO
 
 st.set_page_config(page_title="Fast Excel Merger Tool", layout="centered")
 
@@ -14,9 +15,9 @@ uploaded_files = st.file_uploader(
     accept_multiple_files=True
 )
 
-# ---------------- COLUMN SELECTION ---------------- #
-
 selected_columns = []
+
+# ---------------- COLUMN SELECTION ---------------- #
 
 if uploaded_files:
     try:
@@ -66,12 +67,14 @@ if start_merge:
 
     st.success("✅ Files merged at high speed!")
 
-    # ✅ In-memory download (FASTEST)
-    output_bytes = merged_df.to_excel(index=False, engine="openpyxl")
+    # ✅ ✅ CORRECT IN-MEMORY DOWNLOAD (NO ERROR)
+    output = BytesIO()
+    merged_df.to_excel(output, index=False, engine="openpyxl")
+    output.seek(0)
 
     st.download_button(
         label="⬇ Download Merged Excel",
-        data=merged_df.to_excel(index=False).encode(),
+        data=output,
         file_name="merged_output.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
