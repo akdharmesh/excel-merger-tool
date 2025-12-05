@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 
-st.set_page_config(page_title="Fast Excel Merger Tool", layout="centered")
+st.set_page_config(page_title="Excel Merger Tool", layout="centered")
 
-st.title("⚡ Fast Online Excel Merger Tool")
+st.title("⚡ Online Excel Merger Tool By akdharmesh")
 st.write("Upload Excel files, select columns, and merge them instantly.")
 
 # ---------------- FILE UPLOAD ---------------- #
