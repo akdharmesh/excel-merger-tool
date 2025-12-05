@@ -36,11 +36,11 @@ if uploaded_files:
 
 # ---------------- START MERGE BUTTON ---------------- #
 
-start_merge = st.button("🚀 Start Fast Merge")
+start_merge = st.button("🚀 Start Merge")
 
 # ---------------- FAST MERGING ---------------- #
 
-@st.cache_data(show_spinner="⚡ Merging files at high speed...")
+@st.cache_data(show_spinner="⚡ Merging files...")
 def fast_merge(files, selected_columns):
     all_data = []
 
@@ -65,7 +65,7 @@ if start_merge:
 
     merged_df = fast_merge(uploaded_files, selected_columns)
 
-    st.success("✅ Files merged at high speed!")
+    st.success("✅ Files merged!")
 
     # ✅ ✅ CORRECT IN-MEMORY DOWNLOAD (NO ERROR)
     output = BytesIO()
