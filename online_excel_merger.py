@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
-import time
 
-st.set_page_config(page_title="Excel Merger Tool", layout="centered")
+st.set_page_config(page_title="Fast Excel Merger Tool", layout="centered")
 
-st.title("📊 Online Excel Merger Tool")
-st.write("Upload Excel files, select columns, then click **Start Merging**.")
+st.title("⚡ Fast Online Excel Merger Tool")
+st.write("Upload Excel files, select columns, and merge them instantly.")
 
 # ---------------- FILE UPLOAD ---------------- #
 
@@ -21,13 +20,11 @@ selected_columns = []
 
 if uploaded_files:
     try:
-        first_df = pd.read_excel(uploaded_files[0])
+        first_df = pd.read_excel(uploaded_files[0], engine="openpyxl")
         all_columns = first_df.columns.tolist()
 
-        st.subheader("✅ Select columns to merge")
-
         selected_columns = st.multiselect(
-            "Tick the columns you want:",
+            "✅ Select columns to merge:",
             options=all_columns,
             default=all_columns
         )
@@ -38,11 +35,22 @@ if uploaded_files:
 
 # ---------------- START MERGE BUTTON ---------------- #
 
-st.subheader("🚀 Start Merging")
+start_merge = st.button("🚀 Start Fast Merge")
 
-start_merge = st.button("▶ Start Merging Now")
+# ---------------- FAST MERGING ---------------- #
 
-# ---------------- MERGING PROCESS ---------------- #
+@st.cache_data(show_spinner="⚡ Merging files at high speed...")
+def fast_merge(files, selected_columns):
+    all_data = []
+
+    for file in files:
+        df = pd.read_excel(file, engine="openpyxl")
+        df = df[selected_columns]
+        df["Source_File"] = file.name
+        all_data.append(df)
+
+    merged_df = pd.concat(all_data, ignore_index=True)
+    return merged_df
 
 if start_merge:
 
@@ -54,35 +62,16 @@ if start_merge:
         st.warning("⚠ Please select at least one column.")
         st.stop()
 
-    progress = st.progress(0)
-    status_text = st.empty()
+    merged_df = fast_merge(uploaded_files, selected_columns)
 
-    all_data = []
-    total_files = len(uploaded_files)
+    st.success("✅ Files merged at high speed!")
 
-    for i, file in enumerate(uploaded_files):
-        status_text.text(f"Merging file {i+1} of {total_files}...")
+    # ✅ In-memory download (FASTEST)
+    output_bytes = merged_df.to_excel(index=False, engine="openpyxl")
 
-        df = pd.read_excel(file)
-        df = df[selected_columns]
-        df["Source_File"] = file.name
-
-        all_data.append(df)
-
-        time.sleep(0.5)   # ✅ REQUIRED for visible progress
-        progress.progress((i + 1) / total_files)
-
-    merged_df = pd.concat(all_data, ignore_index=True)
-
-    st.success("✅ Files merged successfully!")
-
-    output_file = "merged_output.xlsx"
-    merged_df.to_excel(output_file, index=False)
-
-    with open(output_file, "rb") as f:
-        st.download_button(
-            label="⬇ Download Merged Excel",
-            data=f,
-            file_name=output_file,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+    st.download_button(
+        label="⬇ Download Merged Excel",
+        data=merged_df.to_excel(index=False).encode(),
+        file_name="merged_output.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
