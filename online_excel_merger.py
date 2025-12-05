@@ -4,7 +4,7 @@ from io import BytesIO
 
 st.set_page_config(page_title="Excel Merger Tool", layout="centered")
 
-st.title("⚡ Online Excel Merger Tool By akdharmesh")
+st.title("⚡ Online Excel Merger Tool By AD")
 st.write("Upload Excel files, select columns, and merge them instantly.")
 
 # ---------------- FILE UPLOAD ---------------- #
